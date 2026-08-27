@@ -1,0 +1,13 @@
+import React from 'react';
+import JannyInterface from './components/JannyInterface';
+import { AuthProvider } from './context/AuthContext';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <div className="w-full h-screen bg-black">
+        <JannyInterface />
+      </div>
+    </AuthProvider>
+  );
+}

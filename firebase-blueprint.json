@@ -1,0 +1,72 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile data and companion preferences synced with Janny/Jay partner",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "maxLength": 100 },
+        "nickname": { "type": "string", "maxLength": 100 },
+        "lastMeal": { "type": "string", "maxLength": 200 },
+        "favoriteFood": { "type": "string", "maxLength": 200 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "partnerGender": { "type": "string", "enum": ["female", "male"] },
+        "partnerVoice": { "type": "string", "enum": ["Aoede", "Fenrir", "Kore", "Puck"] },
+        "preferredLanguage": { "type": "string", "maxLength": 50 },
+        "mood": { 
+          "type": "string", 
+          "enum": ["romantic", "caring", "happy", "shy", "jealous", "playful", "crying", "angry"] 
+        },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "MemoryItem": {
+      "title": "MemoryItem",
+      "description": "Individual persistent memory item remembered by the AI partner",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "description": "Auth UID of the owner" },
+        "category": { 
+          "type": "string", 
+          "enum": ["food_drink", "profile", "daily_life", "interests", "events", "special"] 
+        },
+        "detail": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "number" },
+        "formattedDate": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "userId", "category", "detail", "timestamp"]
+    },
+    "ChatMessageItem": {
+      "title": "ChatMessageItem",
+      "description": "User and AI companion text chat history entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "description": "Auth UID of the owner" },
+        "sender": { "type": "string", "enum": ["user", "companion"] },
+        "text": { "type": "string", "maxLength": 4000 },
+        "mood": { "type": "string", "maxLength": 50 },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "userId", "sender", "text", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private user profile, voice, language, companion and mood preferences"
+    },
+    "/users/{userId}/memories/{memoryId}": {
+      "schema": "MemoryItem",
+      "description": "Individual memories remembered across sessions"
+    },
+    "/users/{userId}/chat_messages/{messageId}": {
+      "schema": "ChatMessageItem",
+      "description": "Private text chat history between user and companion"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidProfile(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+        (!('name' in data) || (data.name is string && data.name.size() <= 100)) &&
+        (!('nickname' in data) || (data.nickname is string && data.nickname.size() <= 100)) &&
+        (!('lastMeal' in data) || (data.lastMeal is string && data.lastMeal.size() <= 200)) &&
+        (!('favoriteFood' in data) || (data.favoriteFood is string && data.favoriteFood.size() <= 200)) &&
+        (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+        (!('partnerGender' in data) || (data.partnerGender in ['female', 'male'])) &&
+        (!('partnerVoice' in data) || (data.partnerVoice in ['Aoede', 'Fenrir', 'Kore', 'Puck'])) &&
+        (!('preferredLanguage' in data) || (data.preferredLanguage is string && data.preferredLanguage.size() <= 50)) &&
+        (!('mood' in data) || (data.mood in ['romantic', 'caring', 'happy', 'shy', 'jealous', 'playful', 'crying', 'angry']));
+    }
+
+    function isValidMemory(data) {
+      return data.id is string && data.id.size() <= 128 &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.category in ['food_drink', 'profile', 'daily_life', 'interests', 'events', 'special'] &&
+        data.detail is string && data.detail.size() <= 1000 &&
+        data.timestamp is number;
+    }
+
+    function isValidChatMessage(data) {
+      return data.id is string && data.id.size() <= 128 &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.sender in ['user', 'companion'] &&
+        data.text is string && data.text.size() <= 4000 &&
+        data.timestamp is number;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User Profile
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidId(userId) && isValidProfile(request.resource.data);
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // User's Memories Subcollection
+      match /memories/{memoryId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(memoryId);
+        allow list: if isOwner(userId) && isValidId(userId);
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(memoryId) && isValidMemory(request.resource.data);
+        allow update: if isOwner(userId) && isValidId(userId) && isValidId(memoryId) && isValidMemory(request.resource.data);
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(memoryId);
+      }
+
+      // User's Chat Messages Subcollection
+      match /chat_messages/{messageId} {
+        allow get: if isOwner(userId) && isValidId(userId) && isValidId(messageId);
+        allow list: if isOwner(userId) && isValidId(userId);
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(messageId) && isValidChatMessage(request.resource.data);
+        allow update: if isOwner(userId) && isValidId(userId) && isValidId(messageId) && isValidChatMessage(request.resource.data);
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(messageId);
+      }
+    }
+  }
+}

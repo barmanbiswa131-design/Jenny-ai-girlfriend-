@@ -1,0 +1,10 @@
+{
+  "name": "Janny - Your AI Girlfriend",
+  "description": "An empathetic, romantic AI companion (Janny & Jay) featuring distinct Text Chat and Live Voice Call modes, mood and emotion control, persistent long-term memory, and a ChatGPT & Gemini inspired interface.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

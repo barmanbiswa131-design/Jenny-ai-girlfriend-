@@ -1,0 +1,12 @@
+{
+  "projectId": "jenny-ai-girlfriend",
+  "appId": "",
+  "apiKey": "",
+  "authDomain": "jenny-ai-girlfriend.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "jenny-ai-girlfriend.firebasestorage.app",
+  "messagingSenderId": "",
+  "measurementId": "",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}
