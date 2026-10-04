@@ -4,7 +4,7 @@ import AvatarPlayground from './components/AvatarPlayground';
 import { AuthProvider } from './context/AuthContext';
 
 export default function App() {
-  if (window.location.pathname === '/avatar') {
+  if (new URLSearchParams(window.location.search).get('avatar') === '1') {
     return <AvatarPlayground />;
   }
   return (
